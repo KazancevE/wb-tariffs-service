@@ -1,16 +1,57 @@
 # WB Tariffs Service
 
-Ежечасно получает тарифы WB, сохраняет в PostgreSQL, каждые 6ч обновляет Google Sheets.
+Сервис на NestJS, который:
+- ежечасно получает box‑тарифы WB и сохраняет их в PostgreSQL;
+- каждые 6 часов (и по ручному запросу) обновляет Google Sheets (лист `stocks_coefs`).
 
-## Запуск
+---
 
-1. Клонируйте: `git clone <repo>`
-2. Создайте `.env` из `.env.example`
-3. Установить WB_TOKEN
-4. Google: создайте service account, скачайте JSON, поделитесь sheets (email из JSON)
-5. Создайте тестовые sheets с листом "stocks_coefs"
-6. `docker compose up -d`
+## Стек
 
-Healthcheck: http://localhost:3000/health
+- Node.js 20 (alpine)
+- NestJS 11 (`@nestjs/common`, `@nestjs/core`, `@nestjs/schedule`)[web:106]
+- PostgreSQL + Knex
+- Axios (WB API)[web:84]
+- Google Sheets API (`googleapis`)[web:107]
+- Docker, docker compose
 
-Логи: `docker compose logs -f app`
+---
+
+## Подготовка
+
+### 1. Wildberries API
+
+1. Получите токен WB в ЛК продавца.
+2. Убедитесь, что доступен метод  
+   `GET https://common-api.wildberries.ru/api/v1/tariffs/box?date=YYYY-MM-DD`  
+   с заголовком `Authorization: Bearer <WB_TOKEN>`.[web:84]
+
+### 2. Google Cloud и Google Sheets
+
+1. Зайдите в [Google Cloud Console](https://console.developers.google.com).[web:90]
+2. Выберите/создайте проект.
+3. В разделе **APIs & Services → Library** включите **Google Sheets API**.[web:90][web:104]
+4. В **APIs & Services → Credentials** создайте **Service Account**, скачайте JSON‑ключ.
+5. В каждом Google Sheet:
+   - откройте файл;
+   - «Поделиться» → добавьте сервисный аккаунт `...@<project>.iam.gserviceaccount.com` как **редактора**.[web:85]
+6. В каждом Sheet создайте лист `stocks_coefs` (именно такое имя).
+
+---
+
+## .env
+
+В корне проекта создайте `.env` (можно из `.env.example`):
+
+```env
+DB_HOST=postgres
+DB_PORT=5432
+DB_NAME=wb_tariffs_db
+DB_USER=user
+DB_PASSWORD=pass
+
+WB_TOKEN=... # токен Wildberries
+
+GOOGLE_SHEETS_IDS=sheetId1,sheetId2 # ID таблиц через запятую
+
+PORT=3000
