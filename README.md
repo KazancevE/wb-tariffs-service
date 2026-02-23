@@ -59,22 +59,22 @@ PORT=3000
 
 ## Cборка и запуск
 ### Cборка образа приложения
-docker compose build --no-cache app[5][1]
+docker compose build --no-cache app
 
 ### Запуск сервисов в фоне
-docker compose up -d[1][5]
+docker compose up -d
 
 ### healthcheck HTTP‑сервиса
-curl <http://localhost:3000/health>[2]
+curl <http://localhost:3000/health>
 ### → {"status":"ok","timestamp":"..."}
 
 ### Ручной запуск полного цикла (WB → Postgres → Google Sheets)
-curl <http://localhost:3000/run-once>[2]
+curl <http://localhost:3000/run-once>
 
 ### Логи приложения
-docker compose logs -f app[5][1]
+docker compose logs -f app
 
 ### Проверка данных в БД (количество записей за текущую дату)
 docker compose exec postgres \
   psql -U user -d wb_tariffs_db \
-  -c "SELECT COUNT(*) FROM wb_tariffs WHERE fetch_date = CURRENT_DATE;"[3][4]
+  -c "SELECT COUNT(*) FROM wb_tariffs WHERE fetch_date = CURRENT_DATE;"
