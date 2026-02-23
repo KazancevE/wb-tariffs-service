@@ -55,6 +55,7 @@ WB_TOKEN=... # токен Wildberries
 GOOGLE_SHEETS_IDS=sheetId1,sheetId2 # ID таблиц через запятую
 
 PORT=3000
+```
 
 ## Cборка и запуск
 # сборка образа приложения
